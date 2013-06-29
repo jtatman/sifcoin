@@ -8,9 +8,7 @@
 #include <QTime>
 #include <QThread>
 #include <QKeyEvent>
-#if QT_VERSION < 0x050000
 #include <QUrl>
-#endif
 #include <QScrollBar>
 
 #include <openssl/crypto.h>
@@ -254,11 +252,8 @@ void RPCConsole::setClientModel(ClientModel *model)
     this->clientModel = model;
     if(model)
     {
-        // Keep up to date with client
-        setNumConnections(model->getNumConnections());
+        // Subscribe to information, replies, messages, errors
         connect(model, SIGNAL(numConnectionsChanged(int)), this, SLOT(setNumConnections(int)));
-
-        setNumBlocks(model->getNumBlocks(), model->getNumBlocksOfPeers());
         connect(model, SIGNAL(numBlocksChanged(int,int)), this, SLOT(setNumBlocks(int,int)));
 
         // Provide initial values
@@ -267,6 +262,7 @@ void RPCConsole::setClientModel(ClientModel *model)
         ui->buildDate->setText(model->formatBuildDate());
         ui->startupTime->setText(model->formatClientStartupTime());
 
+        setNumConnections(model->getNumConnections());
         ui->isTestNet->setChecked(model->isTestNet());
     }
 }
@@ -310,7 +306,7 @@ void RPCConsole::clear()
                 "b { color: #006060; } "
                 );
 
-    message(CMD_REPLY, (tr("Welcome to the Bitcoin RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the Sifcoin RPC console.") + "<br>" +
                         tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                         tr("Type <b>help</b> for an overview of available commands.")), true);
 }

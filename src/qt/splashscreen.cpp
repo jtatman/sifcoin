@@ -3,7 +3,6 @@
 #include "util.h"
 
 #include <QPainter>
-#undef loop /* ugh, remove this when the #define loop is gone from util.h */
 #include <QApplication>
 
 SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) :
@@ -27,7 +26,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) :
 
     // load the bitmap for writing some text over it
     QPixmap newPixmap;
-    if(GetBoolArg("-testnet", false)) {
+    if(GetBoolArg("-testnet")) {
         newPixmap     = QPixmap(":/images/splash_testnet");
     }
     else {
@@ -64,7 +63,7 @@ SplashScreen::SplashScreen(const QPixmap &pixmap, Qt::WindowFlags f) :
 
     // draw copyright stuff
     pixPaint.setFont(QFont(font, 10*fontFactor));
-    pixPaint.drawText(newPixmap.width()-titleTextWidth-paddingRight,paddingTop+titleCopyrightVSpace,copyrightText);
+    pixPaint.drawText(newPixmap.width()-titleTextWidth-paddingRight,paddingTop+titleCopyrightVSpace*2,copyrightText);
 
     // draw testnet string if -testnet is on
     if(QApplication::applicationName().contains(QString("-testnet"))) {

@@ -19,9 +19,9 @@ public:
      */
     enum Unit
     {
-        BTC,
-        mBTC,
-        uBTC
+        SIC,
+        cSIC,
+        mSIC
     };
 
     //! @name Static API
@@ -38,8 +38,6 @@ public:
     static QString description(int unit);
     //! Number of Satoshis (1e-8) per unit
     static qint64 factor(int unit);
-    //! Max amount per unit
-    static qint64 maxAmount(int unit);
     //! Number of amount digits (to represent max number of coins)
     static int amountDigits(int unit);
     //! Number of decimals left

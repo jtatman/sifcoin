@@ -3,15 +3,12 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "chainparams.h"
 #include "db.h"
 #include "util.h"
-#include "hash.h"
-#include "addrman.h"
+#include "main.h"
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <openssl/rand.h>
 
 #ifndef WIN32
 #include "sys/stat.h"
@@ -489,6 +486,7 @@ void CDBEnv::Flush(bool fShutdown)
 // CAddrDB
 //
 
+
 CAddrDB::CAddrDB()
 {
     pathAddr = GetDataDir() / "peers.dat";
@@ -503,9 +501,9 @@ bool CAddrDB::Write(const CAddrMan& addr)
 
     // serialize addresses, checksum data up to that point, then append csum
     CDataStream ssPeers(SER_DISK, CLIENT_VERSION);
-    ssPeers << FLATDATA(Params().MessageStart());
+    ssPeers << FLATDATA(pchMessageStart);
     ssPeers << addr;
-    uint256 hash = Hash(ssPeers.begin(), ssPeers.end());
+    uint256 hash = Hash2(ssPeers.begin(), ssPeers.end());
     ssPeers << hash;
 
     // open temp output file, and associate with CAutoFile
@@ -543,8 +541,6 @@ bool CAddrDB::Read(CAddrMan& addr)
     // use file size to size memory buffer
     int fileSize = GetFilesize(filein);
     int dataSize = fileSize - sizeof(uint256);
-    //Don't try to resize to a negative number if file is small
-    if ( dataSize < 0 ) dataSize = 0;
     vector<unsigned char> vchData;
     vchData.resize(dataSize);
     uint256 hashIn;
@@ -562,17 +558,17 @@ bool CAddrDB::Read(CAddrMan& addr)
     CDataStream ssPeers(vchData, SER_DISK, CLIENT_VERSION);
 
     // verify stored checksum matches input data
-    uint256 hashTmp = Hash(ssPeers.begin(), ssPeers.end());
+    uint256 hashTmp = Hash2(ssPeers.begin(), ssPeers.end());
     if (hashIn != hashTmp)
         return error("CAddrman::Read() : checksum mismatch; data corrupted");
 
     unsigned char pchMsgTmp[4];
     try {
-        // de-serialize file header (network specific magic number) and ..
+        // de-serialize file header (pchMessageStart magic number) and
         ssPeers >> FLATDATA(pchMsgTmp);
 
-        // ... verify the network matches ours
-        if (memcmp(pchMsgTmp, Params().MessageStart(), sizeof(pchMsgTmp)))
+        // verify the network matches ours
+        if (memcmp(pchMsgTmp, pchMessageStart, sizeof(pchMsgTmp)))
             return error("CAddrman::Read() : invalid network magic number");
 
         // de-serialize address data into one CAddrMan object

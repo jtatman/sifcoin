@@ -17,13 +17,15 @@
 #include "splashscreen.h"
 
 #include <QMessageBox>
-#if QT_VERSION < 0x050000
 #include <QTextCodec>
-#endif
 #include <QLocale>
 #include <QTimer>
 #include <QTranslator>
 #include <QLibraryInfo>
+
+#ifdef Q_OS_MAC
+#include "macdockiconhandler.h"
+#endif
 
 #if defined(BITCOIN_NEED_QT_PLUGINS) && !defined(_BITCOIN_QT_PLUGINS_INCLUDED)
 #define _BITCOIN_QT_PLUGINS_INCLUDED
@@ -106,23 +108,19 @@ static std::string Translate(const char* psz)
 static void handleRunawayException(std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
-    QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. Bitcoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
+    QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. Sifcoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
     exit(1);
 }
 
 #ifndef BITCOIN_QT_TEST
 int main(int argc, char *argv[])
 {
-    fHaveGUI = true;
-
     // Command-line options take precedence:
     ParseParameters(argc, argv);
 
-#if QT_VERSION < 0x050000
     // Internal string conversion is all UTF-8
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForCStrings(QTextCodec::codecForTr());
-#endif
 
     Q_INIT_RESOURCE(bitcoin);
     QApplication app(argc, argv);
@@ -139,11 +137,11 @@ int main(int argc, char *argv[])
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
 
-    // ... then bitcoin.conf:
+    // ... then sifcoin.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {
         // This message can not be translated, as translation is not initialized yet
-        // (which not yet possible because lang=XX can be overridden in bitcoin.conf in the data directory)
+        // (which not yet possible because lang=XX can be overridden in sifcoin.conf in the data directory)
         QMessageBox::critical(0, "Bitcoin",
                               QString("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
@@ -152,12 +150,12 @@ int main(int argc, char *argv[])
 
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
-    QApplication::setOrganizationName("Bitcoin");
+    QApplication::setOrganizationName("Sifcoin");
     QApplication::setOrganizationDomain("bitcoin.org");
-    if (GetBoolArg("-testnet", false)) // Separate UI settings for testnet
-        QApplication::setApplicationName("Bitcoin-Qt-testnet");
+    if(GetBoolArg("-testnet")) // Separate UI settings for testnet
+        QApplication::setApplicationName("Sifcoin-Qt-testnet");
     else
-        QApplication::setApplicationName("Bitcoin-Qt");
+        QApplication::setApplicationName("Sifcoin-Qt");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
@@ -204,8 +202,15 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+#ifdef Q_OS_MAC
+    // on mac, also change the icon now because it would look strange to have a testnet splash (green) and a std app icon (orange)
+    if(GetBoolArg("-testnet")) {
+        MacDockIconHandler::instance()->setIcon(QIcon(":icons/bitcoin_testnet"));
+    }
+#endif
+
     SplashScreen splash(QPixmap(), 0);
-    if (GetBoolArg("-splash", true) && !GetBoolArg("-min", false))
+    if (GetBoolArg("-splash", true) && !GetBoolArg("-min"))
     {
         splash.show();
         splash.setAutoFillBackground(true);
@@ -217,16 +222,13 @@ int main(int argc, char *argv[])
 
     try
     {
-#ifndef Q_OS_MAC
         // Regenerate startup link, to fix links to old versions
-        // OSX: makes no sense on mac and might also scan/mount external (and sleeping) volumes (can take up some secs)
         if (GUIUtil::GetStartOnSystemStartup())
             GUIUtil::SetStartOnSystemStartup(true);
-#endif
 
         boost::thread_group threadGroup;
 
-        BitcoinGUI window(GetBoolArg("-testnet", false), 0);
+        BitcoinGUI window;
         guiref = &window;
 
         QTimer* pollShutdownTimer = new QTimer(guiref);
@@ -252,7 +254,7 @@ int main(int argc, char *argv[])
                 window.setCurrentWallet("~Default");
 
                 // If -min option passed, start window minimized.
-                if(GetBoolArg("-min", false))
+                if(GetBoolArg("-min"))
                 {
                     window.showMinimized();
                 }
@@ -273,7 +275,7 @@ int main(int argc, char *argv[])
                 window.removeAllWallets();
                 guiref = 0;
             }
-            // Shutdown the core and its threads, but don't exit Bitcoin-Qt here
+            // Shutdown the core and its threads, but don't exit Sifcoin-Qt here
             threadGroup.interrupt_all();
             threadGroup.join_all();
             Shutdown();

@@ -8,8 +8,10 @@
 #include "bitcoingui.h"
 #include "walletstack.h"
 
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QMessageBox>
+
+#include <stdio.h>
 
 WalletFrame::WalletFrame(BitcoinGUI *_gui) :
     QFrame(_gui),
@@ -126,4 +128,5 @@ void WalletFrame::unlockWallet()
 void WalletFrame::setEncryptionStatus()
 {
     walletStack->setEncryptionStatus();
-}
+};
+

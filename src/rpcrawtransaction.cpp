@@ -9,6 +9,7 @@
 #include "bitcoinrpc.h"
 #include "db.h"
 #include "init.h"
+#include "main.h"
 #include "net.h"
 #include "wallet.h"
 
@@ -406,7 +407,10 @@ Value signrawtransaction(const Array& params, bool fHelp)
             bool fGood = vchSecret.SetString(k.get_str());
             if (!fGood)
                 throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid private key");
-            CKey key = vchSecret.GetKey();
+            CKey key;
+            bool fCompressed;
+            CSecret secret = vchSecret.GetSecret(fCompressed);
+            key.SetSecret(secret, fCompressed);
             tempKeystore.AddKey(key);
         }
     }
@@ -554,7 +558,7 @@ Value sendrawtransaction(const Array& params, bool fHelp)
         if (!fHave) {
             // push to local node
             CValidationState state;
-            if (!mempool.accept(state, tx, false, NULL))
+            if (!tx.AcceptToMemoryPool(state, true, false))
                 throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX rejected"); // TODO: report validation state
         }
     }
