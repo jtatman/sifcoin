@@ -14,6 +14,9 @@
 // Main network
 //
 
+unsigned int pnSeed[] = {};
+
+/*
 unsigned int pnSeed[] =
 {
     0xe473042e, 0xb177f2ad, 0xd63f3fb2, 0xf864f736, 0x44a23ac7, 0xcf6d9650, 0xd648042e, 0x0536f447,
@@ -92,6 +95,7 @@ unsigned int pnSeed[] =
     0x900486bc, 0x08055459, 0xe7ec1017, 0x7e39494c, 0x4f443b25, 0x14751a8a, 0x717d03d4, 0xbd0e24d8,
     0x054b6f56, 0x854c496c, 0xd92a454a, 0xc39bd054, 0x6093614b, 0x9dbad754, 0x5bf0604a, 0x99f22305
 };
+*/
 
 class CMainParams : public CChainParams {
 public:
@@ -136,10 +140,10 @@ public:
         assert(hashGenesisBlock == uint256("0x000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"));
         assert(genesis.hashMerkleRoot == uint256("0x4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"));
 
-        vSeeds.push_back(CDNSSeedData("bitcoin.sipa.be", "seed.bitcoin.sipa.be"));
-        vSeeds.push_back(CDNSSeedData("bluematt.me", "dnsseed.bluematt.me"));
-        vSeeds.push_back(CDNSSeedData("dashjr.org", "dnsseed.bitcoin.dashjr.org"));
-        vSeeds.push_back(CDNSSeedData("xf2.org", "bitseed.xf2.org"));
+//        vSeeds.push_back(CDNSSeedData("bitcoin.sipa.be", "seed.bitcoin.sipa.be"));
+//        vSeeds.push_back(CDNSSeedData("bluematt.me", "dnsseed.bluematt.me"));
+//        vSeeds.push_back(CDNSSeedData("dashjr.org", "dnsseed.bitcoin.dashjr.org"));
+//        vSeeds.push_back(CDNSSeedData("xf2.org", "bitseed.xf2.org"));
 
         base58Prefixes[PUBKEY_ADDRESS] = 0;
         base58Prefixes[SCRIPT_ADDRESS] = 5;

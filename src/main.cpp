@@ -1072,6 +1072,7 @@ uint256 static GetOrphanRoot(const CBlockHeader* pblock)
 
 int64 static GetBlockValue(int nHeight, int64 nFees, unsigned int nBits)
 {
+    // orig params 
     //int64 nSubsidy = 50 * COIN;
     //CBigNum diff = bnProofOfWorkLimit;
     //diff /= CBigNum().SetCompact(nNonce);
