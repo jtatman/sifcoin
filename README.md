@@ -5,8 +5,11 @@ Copyright (c) 2009-2013 Bitcoin Developers
 
 Distributed under the MIT/X11 software license, see the accompanying
 file COPYING or http://www.opensource.org/licenses/mit-license.php.
-This product includes software developed by the OpenSSL Project for use in the [OpenSSL Toolkit](http://www.openssl.org/). This product includes
-cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), UPnP software written by Thomas Bernard and
+This product includes software developed by the OpenSSL Project for 
+use in the [OpenSSL Toolkit](http://www.openssl.org/). This product 
+includes cryptographic software written by Eric Young 
+([eay@cryptsoft.com](mailto:eay@cryptsoft.com)), 
+UPnP software written by Thomas Bernard and 
 sphlib 3.0 by Thomas Pornin.
 
 
@@ -16,6 +19,19 @@ Sifcoin is a free open source peer-to-peer electronic cash system that is
 completely decentralized, without the need for a central server or trusted
 parties.  Users hold the crypto keys to their own money and transact directly
 with each other, with the help of a P2P network to check for double-spending.
+
+The real thing that's at hand here is the manipulation of the block reward in 
+accordance with difficulty. Each block reward is 1 coin, plus the bonus. The 
+bonus is caluclated as the square root of the current difficulty times the 
+current block number. Example:
+
+block reward:
+0 - 50 coins
+1 - 1 + sqrt(1 * diff)
+2 - 1 + sqrt(2 * diff)
+3 - 1 + sqrt(3 * diff) 
+
+and so on... 
 
 
 Setup
