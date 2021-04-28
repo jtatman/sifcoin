@@ -26,10 +26,13 @@ bonus is caluclated as the square root of the current difficulty times the
 current block number. Example:
 
 block reward:
-0 - 50 coins
-1 - 1 + sqrt(1 * diff)
-2 - 1 + sqrt(2 * diff)
-3 - 1 + sqrt(3 * diff) 
+
+block | reward
+----- | -----
+0 | 50 coins
+1 | 1 + sqrt(1 * diff)
+2 | 1 + sqrt(2 * diff)
+3 | 1 + sqrt(3 * diff) 
 
 and so on... 
 
